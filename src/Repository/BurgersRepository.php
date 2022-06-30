@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Burgers;
+use App\Entity\Burger;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,10 +18,10 @@ class BurgersRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Burgers::class);
+        parent::__construct($registry, Burger::class);
     }
 
-    public function add(Burgers $entity, bool $flush = false): void
+    public function add(Burger $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class BurgersRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Burgers $entity, bool $flush = false): void
+    public function remove(Burger $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 

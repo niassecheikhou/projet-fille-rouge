@@ -2,26 +2,18 @@
 
 namespace App\Entity;
 
-
 use ApiPlatform\Core\Annotation\ApiResource;
-
 #[ApiResource(
     collectionOperations:[
-        "complement"=>[
+        "catlogue"=>[
             "method"=>"GET",
-            "path"=>"/complement",
+            "path"=>"/catlogue",
         ]
         ],
         itemOperations:[]
 )]
-class Complement 
+
+class Catalogue
 {
    
-
-   
-
-   
-
-    
-    
 }

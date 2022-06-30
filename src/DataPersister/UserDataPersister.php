@@ -13,21 +13,20 @@ class UserDataPersister implements DataPersisterInterface
 {
     private UserPasswordHasherInterface $passwordHasher;
     private EntityManagerInterface $entityManager;
-    private ?TokenInterface $token;
+    //private ?TokenInterface $token;
     public function __construct(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
     {
         $this->passwordHasher= $passwordHasher;
         $this->entityManager = $entityManager;
-        $this->token = $tokenStorage->getToken();
+        //$this->token = $tokenStorage->getToken();
     }
 
     
     public function supports($data): bool
     {
-        return $data instanceof User;
+        return $data instanceof User ;
     }
-
-
+    
     /**
     * @param User $data
     */

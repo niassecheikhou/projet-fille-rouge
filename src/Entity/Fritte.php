@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 #[ORM\Entity(repositoryClass: FritteRepository::class)]
 #[ApiResource]
 
-class Fritte extends Complement
+class Fritte extends Produit
 {
     #[ORM\Column(type: 'string', length: 255,nullable:true)]
     private $quantite;

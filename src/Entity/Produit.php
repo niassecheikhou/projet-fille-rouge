@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]
-#[ORM\DiscriminatorMap(["complement"=>"Complement", "burger"=>"Burger"])]
+#[ORM\DiscriminatorMap(["complement"=>"Complement", "burger"=>"Burger","boisson"=>"Boisson","fritte"=>"Fritte","menu"=>"Menu"])]
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[ApiResource]
@@ -31,8 +31,12 @@ class Produit
     #[ORM\Column(type: 'integer', length: 255)]
     protected $prix;
 
-    #[ORM\Column(type: 'integer', length: 255)]
-    protected $etatProduit;
+
+    #[ORM\ManyToOne(targetEntity: Gestionnaire::class, inversedBy: 'produits')]
+    private $gestionnaire;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isEtat=true;
 
     public function getId(): ?int
     {
@@ -88,14 +92,26 @@ class Produit
         return $this;
     }
 
-    public function getEtatProduit(): ?string
+    public function getGestionnaire(): ?Gestionnaire
     {
-        return $this->etatProduit;
+        return $this->gestionnaire;
     }
 
-    public function setEtatProduit(string $etatProduit): self
+    public function setGestionnaire(?Gestionnaire $gestionnaire): self
     {
-        $this->etatProduit = $etatProduit;
+        $this->gestionnaire = $gestionnaire;
+
+        return $this;
+    }
+
+    public function isIsEtat(): ?bool
+    {
+        return $this->isEtat;
+    }
+
+    public function setIsEtat(bool $isEtat): self
+    {
+        $this->isEtat = $isEtat;
 
         return $this;
     }

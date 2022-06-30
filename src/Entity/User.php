@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -36,6 +38,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'integer', length: 255)]
     protected $etat;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $token;
+
+    #[ORM\Column(type: 'boolean')]
+    private $isActivated;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $expireAt;
+
+    
+    public function __construct()
+    {
+        $this->burgers = new ArrayCollection();
+    }
 
     // #[SerializedName('password')]
     // protected $plainPassword;
@@ -145,4 +162,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     //     return $this;
     // }
+
+    /**
+     * @return Collection<int, Burger>
+     */
+    public function getBurgers(): Collection
+    {
+        return $this->burgers;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function isIsActivated(): ?bool
+    {
+        return $this->isActivated;
+    }
+
+    public function setIsActivated(bool $isActivated): self
+    {
+        $this->isActivated = $isActivated;
+
+        return $this;
+    }
+
+    public function getExpireAt(): ?\DateTimeImmutable
+    {
+        return $this->expireAt;
+    }
+
+    public function setExpireAt(\DateTimeImmutable $expireAt): self
+    {
+        $this->expireAt = $expireAt;
+
+        return $this;
+    }
+
+    
 }
