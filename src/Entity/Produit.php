@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProduitRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -11,7 +13,12 @@ use ApiPlatform\Core\Annotation\ApiResource;
 #[ORM\DiscriminatorMap(["complement"=>"Complement", "burger"=>"Burger","boisson"=>"Boisson","fritte"=>"Fritte","menu"=>"Menu"])]
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
-#[ApiResource]
+#[ApiResource()]
+//     collectionOperations: [ 
+//         'get', 'post' => [
+//              'input_formats' =>  [ 'multipart' => ['multipart/form-data']]
+// )]
+
 class Produit
 {
     #[ORM\Id]
@@ -37,6 +44,18 @@ class Produit
 
     #[ORM\Column(type: 'boolean')]
     private $isEtat=true;
+
+    // #[ORM\ManyToMany(targetEntity: Commande::class, inversedBy: 'produits')]
+    // private $commandes;
+
+    /* #[ORM\ManyToMany(targetEntity: Commande::class, inversedBy: 'produits')]
+    private $produits; */
+
+    public function __construct()
+    {
+        // $this->produits = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,4 +134,5 @@ class Produit
 
         return $this;
     }
+
 }

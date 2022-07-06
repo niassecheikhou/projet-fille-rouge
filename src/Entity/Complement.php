@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
     collectionOperations:[
         "complement"=>[
             "method"=>"GET",
-            "path"=>"/complement",
+            "path"=>"/complements",
         ]
         ],
         itemOperations:[]
