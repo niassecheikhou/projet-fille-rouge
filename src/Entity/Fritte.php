@@ -16,14 +16,14 @@ class Fritte extends Produit
     #[ORM\Column(type: 'string', length: 255,nullable:true)]
     private $quantite;
 
-    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'frittes')]
-    private $menus;
+    #[ORM\OneToMany(mappedBy: 'fritte', targetEntity: MenuFritte::class)]
+    private $menuFrittes;
 
     public function __construct()
     {
-        $this->menus = new ArrayCollection();
+        parent::__construct();
+        $this->menuFrittes = new ArrayCollection();
     }
-
    
     public function getQuantite(): ?string
     {
@@ -38,31 +38,69 @@ class Fritte extends Produit
     }
 
     /**
-     * @return Collection<int, Menu>
+     * @return Collection<int, MenuFritte>
      */
-    public function getMenus(): Collection
+    public function getMenuFrittes(): Collection
     {
-        return $this->menus;
+        return $this->menuFrittes;
     }
 
-    public function addMenu(Menu $menu): self
+    public function addMenuFritte(MenuFritte $menuFritte): self
     {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->addFritte($this);
+        if (!$this->menuFrittes->contains($menuFritte)) {
+            $this->menuFrittes[] = $menuFritte;
+            $menuFritte->setFritte($this);
         }
 
         return $this;
     }
 
-    public function removeMenu(Menu $menu): self
+    public function removeMenuFritte(MenuFritte $menuFritte): self
     {
-        if ($this->menus->removeElement($menu)) {
-            $menu->removeFritte($this);
+        if ($this->menuFrittes->removeElement($menuFritte)) {
+            // set the owning side to null (unless already changed)
+            if ($menuFritte->getFritte() === $this) {
+                $menuFritte->setFritte(null);
+            }
         }
 
         return $this;
     }
 
+   
     
 }
+
+    // #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'frittes')]
+    // private $menus;
+
+    // public function __construct()
+    // {
+    //     $this->menus = new ArrayCollection();
+    // }
+ // /**
+    //  * @return Collection<int, Menu>
+    //  */
+    // public function getMenus(): Collection
+    // {
+    //     return $this->menus;
+    // }
+
+    // public function addMenu(Menu $menu): self
+    // {
+    //     if (!$this->menus->contains($menu)) {
+    //         $this->menus[] = $menu;
+    //         $menu->addFritte($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeMenu(Menu $menu): self
+    // {
+    //     if ($this->menus->removeElement($menu)) {
+    //         $menu->removeFritte($this);
+    //     }
+
+    //     return $this;
+    // }

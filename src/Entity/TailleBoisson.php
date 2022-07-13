@@ -20,13 +20,15 @@ class TailleBoisson
     #[ORM\Column(type: 'string', length: 255)]
     private $taille;
 
-    #[ORM\ManyToMany(targetEntity: Boisson::class, mappedBy: 'boissons')]
-    private $boissons;
+    #[ORM\OneToMany(mappedBy: 'tailleBoisson', targetEntity: MenuTailleBoisson::class)]
+    private $menuTailleBoissons;
 
     public function __construct()
     {
-        $this->boissons = new ArrayCollection();
+        $this->menuTailleBoissons = new ArrayCollection();
     }
+
+   
 
     public function getId(): ?int
     {
@@ -45,30 +47,68 @@ class TailleBoisson
         return $this;
     }
 
+    
     /**
-     * @return Collection<int, Boisson>
+     * @return Collection<int, MenuTailleBoisson>
      */
-    public function getBoissons(): Collection
+    public function getMenuTailleBoissons(): Collection
     {
-        return $this->boissons;
+        return $this->menuTailleBoissons;
     }
 
-    public function addBoisson(Boisson $boisson): self
+    public function addMenuTailleBoisson(MenuTailleBoisson $menuTailleBoisson): self
     {
-        if (!$this->boissons->contains($boisson)) {
-            $this->boissons[] = $boisson;
-            $boisson->addBoisson($this);
+        if (!$this->menuTailleBoissons->contains($menuTailleBoisson)) {
+            $this->menuTailleBoissons[] = $menuTailleBoisson;
+            $menuTailleBoisson->setTailleBoisson($this);
         }
 
         return $this;
     }
 
-    public function removeBoisson(Boisson $boisson): self
+    public function removeMenuTailleBoisson(MenuTailleBoisson $menuTailleBoisson): self
     {
-        if ($this->boissons->removeElement($boisson)) {
-            $boisson->removeBoisson($this);
+        if ($this->menuTailleBoissons->removeElement($menuTailleBoisson)) {
+            // set the owning side to null (unless already changed)
+            if ($menuTailleBoisson->getTailleBoisson() === $this) {
+                $menuTailleBoisson->setTailleBoisson(null);
+            }
         }
 
         return $this;
     }
 }
+// /**
+    //  * @return Collection<int, Boisson>
+    //  */
+    // public function getBoissons(): Collection
+    // {
+    //     return $this->boissons;
+    // }
+
+    // public function addBoisson(Boisson $boisson): self
+    // {
+    //     if (!$this->boissons->contains($boisson)) {
+    //         $this->boissons[] = $boisson;
+    //         $boisson->addBoisson($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeBoisson(Boisson $boisson): self
+    // {
+    //     if ($this->boissons->removeElement($boisson)) {
+    //         $boisson->removeBoisson($this);
+    //     }
+
+    //     return $this;
+    // }
+     // #[ORM\ManyToMany(targetEntity: Boisson::class, mappedBy: 'boissons')]
+    // private $boissons;
+
+    // public function __construct()
+    // {
+    //     $this->boissons = new ArrayCollection();
+    // }
+

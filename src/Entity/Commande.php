@@ -33,9 +33,13 @@ class Commande
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
-    #[ORM\Column(type: 'integer')]
+
+    #[ORM\Column(type: 'integer',nullable:true)]
+    // #[Groups(['commande:red:simple'])]
     private $numeroCommande;
-    #[ORM\Column(type: 'string', length: 255)]
+
+    #[ORM\Column(type: 'string', length: 255,nullable:true)]
+    // #[Groups(['commande:red:simple'])]
     private $dateCommande;
 
 
@@ -55,6 +59,7 @@ class Commande
 
     #[ORM\ManyToOne(targetEntity: Livraison::class, inversedBy: 'commandes')]
     private $livraison;
+
     #[SerializedName('Produits')]
     #[ORM\ManyToMany(targetEntity: LigneCommande::class, inversedBy: 'commandes',cascade:['persist'])]
     #[Groups(['commande:red:simple'])]
@@ -68,7 +73,7 @@ class Commande
     public function __construct()
     {
 
-        $this->produits = new ArrayCollection();
+        // $this->produits = new ArrayCollection();
         // $this->ligneDeCommandes = new ArrayCollection();
         // $this->ligneDecommande = new ArrayCollection();
         $this->ligneDecommandes = new ArrayCollection();

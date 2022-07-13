@@ -10,7 +10,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LigneCommandeRepository::class)]
-
+#[ApiResource(
+    collectionOperations:[
+        "get"=>[
+            'method' => 'get',
+            'normalization_context' => ['groups' => ['lignedecommande:red:simple']],
+            ]
+    
+    ,"post"],
+itemOperations:["put","get"]
+)]
 class LigneCommande
 {
     #[ORM\Id]
@@ -19,13 +28,14 @@ class LigneCommande
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['commande:red:simple'])]
+    #[Groups(['commande:red:simple','lignedecommande:red:simple'])]
     private $qantiteCommander;
 
     #[ORM\Column(type: 'integer')]
-    // #[Groups(['commande:red:simple'])]
+    #[Groups(['commande:red:simple','ligne de commande:red:simple'])]
     private $montantPayer;
 
+    #[Groups(['lignedecommande:red:simple'])]
     #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'ligneDecommandes')]
     private $commandes;
 
@@ -66,26 +76,7 @@ class LigneCommande
     }
 
 
-    // /**
-    //  * @return Collection<int, Commande>
-    //  */
-    // public function getCommande(): Collection
-    // {
-    //     return $this->commande;
-    // }
-
-
-    // public function getCommande(): ?Commande
-    // {
-    //     return $this->commandes;
-    // }
-
-    // public function setCommande(?Commande $commande): self
-    // {
-    //     $this->commande = $commande;
-
-    //     return $this;
-    // }
+  
 
     #[Groups(['commande:red:simple'])]
 
@@ -128,3 +119,23 @@ class LigneCommande
         return $this;
     }
 }
+  // /**
+    //  * @return Collection<int, Commande>
+    //  */
+    // public function getCommande(): Collection
+    // {
+    //     return $this->commande;
+    // }
+
+
+    // public function getCommande(): ?Commande
+    // {
+    //     return $this->commandes;
+    // }
+
+    // public function setCommande(?Commande $commande): self
+    // {
+    //     $this->commande = $commande;
+
+    //     return $this;
+    // }

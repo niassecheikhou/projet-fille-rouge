@@ -3,21 +3,33 @@
 namespace App\Entity;
  
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations:[
+        "get"=>[
+            'method' => 'get',
+            'normalization_context' => ['groups' => ['client:red:simple']],
+            ]
+    
+    ,"post"],
+itemOperations:["put","get"]
+)]
 
 class Client  extends User
 {
     
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['client:red:simple'])]
     private $adresse;
 
+    #[Groups(['client:red:simple'])]
     #[ORM\Column(type: 'string', length: 255)]
     private $telephone;
 

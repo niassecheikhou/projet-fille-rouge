@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\InheritanceType("JOINED")]
@@ -24,6 +25,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     protected $id;
 
+    
+    #[Groups(['livreu:red:simple','gestionnaire:red:simple','client:red:simple'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     protected $login;
 
@@ -32,20 +35,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string')]
     protected $password;
-
+    
+    
+    #[Groups(['livreu:red:simple','gestionnaire:red:simple','client:red:simple'])]
     #[ORM\Column(type: 'string', length: 255)]
     protected $nomComplet;
 
-    #[ORM\Column(type: 'integer', length: 255)]
+    #[ORM\Column(type: 'integer', length: 255,nullable:true)]
     protected $etat;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255,nullable:true)]
     private $token;
 
-    #[ORM\Column(type: 'boolean')]
-    private $isActivated;
+    #[ORM\Column(type: 'boolean',nullable:true)]
+    private $isActivated=true;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable',nullable:true)]
     private $expireAt;
 
     

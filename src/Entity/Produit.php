@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProduitRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type", type:"string")]
@@ -26,16 +27,18 @@ class Produit
     #[ORM\Column(type: 'integer')]
     protected $id;
 
+    // #[Groups(['lignedecommande:red:simple'])]
     #[ORM\Column(type: 'string', length: 255 ,nullable: true)]
     protected $image;
 
     #[ORM\Column(type: 'string', length: 255)]
-    protected $nomProduit;
+    // #[Groups(['ligne de commande:red:simple'])]
+      protected $nomProduit;
 
     #[ORM\Column(type: 'string', length: 255 ,nullable: true)]
     protected $description;
 
-    #[ORM\Column(type: 'integer', length: 255)]
+    #[ORM\Column(type: 'integer', length: 255,nullable:true)]
     protected $prix;
 
 
@@ -45,11 +48,7 @@ class Produit
     #[ORM\Column(type: 'boolean')]
     private $isEtat=true;
 
-    // #[ORM\ManyToMany(targetEntity: Commande::class, inversedBy: 'produits')]
-    // private $commandes;
 
-    /* #[ORM\ManyToMany(targetEntity: Commande::class, inversedBy: 'produits')]
-    private $produits; */
 
     public function __construct()
     {

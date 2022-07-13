@@ -9,7 +9,9 @@ use App\Repository\LivraisonRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: LivraisonRepository::class)]
-#[ApiResource]
+#[ApiResource(
+
+)]
 class Livraison
 {
     #[ORM\Id]
@@ -17,14 +19,17 @@ class Livraison
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $etat;
+    #[ORM\Column(type: 'boolean', length: 255)]
+    private $etat=false;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $telephoneLivraison;
 
     #[ORM\OneToMany(mappedBy: 'livraison', targetEntity: Commande::class)]
     private $commandes;
+
+    #[ORM\ManyToOne(targetEntity: Zone::class, inversedBy: 'livraisons')]
+    private $zone;
 
     public function __construct()
     {
@@ -86,6 +91,18 @@ class Livraison
                 $commande->setLivraison(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
 
         return $this;
     }
