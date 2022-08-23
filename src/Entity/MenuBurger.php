@@ -12,17 +12,18 @@ class MenuBurger
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    // #[Groups(['groups' => 'menu:red:simple','catalogues:red:simple','menu:red:complet'])]
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['groups' => 'menu:red:simple','catalogues:red:simple','menu:red:complet'])]
     private $quantite;
 
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuBurgers')]
     private $menu;
 
     #[ORM\ManyToOne(targetEntity: Burger::class, inversedBy: 'menuBurgers')]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['groups' => 'menu:red:simple','catalogues:red:simple','menu:red:complet'])]
     private $burger;
 
     public function getId(): ?int

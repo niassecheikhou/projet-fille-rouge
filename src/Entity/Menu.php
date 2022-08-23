@@ -3,47 +3,70 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\MenuController;
 use App\Repository\MenuRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ApiResource(
-    collectionOperations:[
-              
-           'ajouterMenu' => [
-            'method' => 'POST',
-            'path' => '/menus2',
-            'controller' =>MenuContoller::class,
-            'deserialize' => false
-       ],
-           "post"=>[
-            'denormalization_context' => ['groups' => ['menu:red:simple']],
-        
-            ]
+    collectionOperations: [
+
+        // 'ajouterMenu' => [
+        //     'method' => 'POST',
+        //     'path' => '/menus2',
+        //     'controller' => MenuController::class,
+        //     'deserialize' => false,
+        //     'normalization_context' => ['groups' => ['menu']],
+
+        // ],
+        "post" => [
+            // 'denormalization_context' => ['groups' => ['menu:write:simple']],
+            "denormalization_context"=>['groups' => ['menu:red:simple']]
+
         ],
-    itemOperations:['get','put']
+        "get" => [
+            "status"=> Response::HTTP_OK,
+            "normalization_context"=>['groups' => ['menu:red:complet']],
+        ]
+    ],
+    itemOperations: ["get" => [
+        "status"=> Response::HTTP_OK,
+        "normalization_context"=>['groups' => ['menu:red:complete']],
+    ], 'put']
 )]
 class Menu extends Produit
 {
-    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:['persist'])]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['menu:red:complet','catalogues:red:simple','menu:red:simple'])]
+    protected $id;
+
+    #[Groups(['menu:red:complet','catalogues:red:simple','menu:red:simple'])]
+    protected $quantite;
+
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class, cascade: ['persist'])]
+    #[Groups(['menu:red:complet','catalogues:red:simple','menu:red:simple'])]
+    #[SerializedName('burgers')]
     private $menuBurgers;
 
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['menu:red:complet','catalogues:red:simple','menu:red:simple'])]
     protected $image;
 
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['menu:red:complet','catalogues:red:simple','menu:red:simple'])]
     protected $nomProduit;
 
-    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuFritte::class,cascade:['persist'])]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuFritte::class, cascade: ['persist'])]
+    #[Groups(['menu:red:simple','menu:red:complet','catalogues:red:simple'])]
+    #[SerializedName('frittes')]
     private $menuFrittes;
 
-    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuTailleBoisson::class,cascade:['persist'])]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuTailleBoisson::class, cascade: ['persist'])]
+    #[Groups(['catalogues:red:simple','menu:red:complet','menu:red:simple'])]
+    #[SerializedName('tailles')]
     private $menuTailleBoissons;
 
     public function __construct()
@@ -57,10 +80,10 @@ class Menu extends Produit
     /**
      * @return Collection<int, MenuBurger>
      */
-    public function getMenuBurgers(): Collection
-    {
-        return $this->menuBurgers;
-    }
+    // public function getMenuBurgers(): Collection
+    // {
+    //     return $this->menuBurgers;
+    // }
 
     public function addMenuBurger(MenuBurger $menuBurger): self
     {
@@ -144,15 +167,15 @@ class Menu extends Produit
         return $this;
     }
 
-    public function AddBurger(Burger $Burger, int $quantite){
+    public function AddBurger(Burger $Burger, int $quantite)
+    {
 
-        $menuB=new menuBurger();
+        $menuB = new menuBurger();
 
         $menuB->setQuantite($quantite);
         $menuB->setBurger($Burger);
         $menuB->setMenu($this);
         $this->AddMenuBurger($menuB);
-
     }
 }
 
@@ -279,4 +302,3 @@ class Menu extends Produit
     // }
 
     //fonction pour ajouter burger
-

@@ -16,22 +16,22 @@ use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
         $this->menuRepository = $menuRepository;
         $this->burgerRepository = $burgerRepository;
     }
-   
+    public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
+    {
+        return  Catalogue::class=== $resourceClass  ;
+    }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = []): iterable
     {
         $catalogue=[];
-        $catalogue['menu']=$this->menuRepository->findAll();
-        $catalogue['burger']=$this->burgerRepository->findAll();
-
+        $catalogue['menus']=$this->menuRepository->findAll();
+        $catalogue['burgers']=$this->burgerRepository->findAll();
+        // dd($catalogue);
+        return $catalogue;
 
         // $context['menu']=$this->menuRepository->findAll();
         // $context['menu']=$this->BurgerRepository->findAll();
-        return $catalogue;
 
     }
-    public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
-    {
-        return $resourceClass === Catalogue::class ;
-    }
+    
 }

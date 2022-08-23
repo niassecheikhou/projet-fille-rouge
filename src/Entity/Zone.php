@@ -7,6 +7,7 @@ use App\Repository\ZoneRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ZoneRepository::class)]
 #[ApiResource(
@@ -14,34 +15,48 @@ use Doctrine\Common\Collections\ArrayCollection;
         "get"=>[
             'method' => 'get',
             'normalization_context' => ['groups' => ['zone:red:simple']],
-            ]
-    
-    ,"post"],
-itemOperations:["put","get"]
+        ],
+        "post"=>['denormalization_context' => ['groups' => ['zone:whrite:simple']]],
+    ],   
+itemOperations:[
+    "get" => ['normalization_context' => ['groups' => ['zone:red:simple']]]
+]
 )]
 class Zone
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['zone:red:simple','livraison:red:simple','zone:whrite:simple'])]
     private $id;
 
     // #[Groups(['groups' => 'menu:red:simple'])]
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['zone:red:simple','livraison:red:simple','zone:whrite:simple','commande:red:items'])]
     private $nomZone;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['zone:red:simple','livraison:red:simple','zone:whrite:simple','commande:red:items'])]
     private $coutZone;
 
     #[ORM\Column(type: 'boolean')]
     private $isetat=true;
 
     #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Livraison::class)]
+    #[Groups(['zone:whrite:simple'])]
     private $livraisons;
+
+    #[ORM\OneToMany(mappedBy: 'zone', targetEntity: Commande::class)]
+    #[Groups(['zone:red:simple'])]
+    private Collection $commandes;
+
+    
 
     public function __construct()
     {
         $this->livraisons = new ArrayCollection();
+        $this->y = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,4 +129,38 @@ class Zone
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setZone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getZone() === $this) {
+                $commande->setZone(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
+    
+  
 }

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\MenuTailleBoissonRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: MenuTailleBoissonRepository::class)]
 class MenuTailleBoisson
@@ -12,17 +13,19 @@ class MenuTailleBoisson
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['groups' => 'menu:red:simple','menu:red:complet'])]
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['menu:red:complet','menu:red:complete','menu:red:complet'])]
     private $quantite;
 
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuTailleBoissons')]
     private $menu;
     
     #[ORM\ManyToOne(targetEntity: TailleBoisson::class, inversedBy: 'menuTailleBoissons')]
-     #[Groups(['groups' => 'menu:red:simple'])]
+     #[Groups(['menu:red:simple','menu:red:complet','catalogues:red:simple'])]
+     #[SerializedName('taille')]
     private $tailleBoisson;
 
     public function getId(): ?int

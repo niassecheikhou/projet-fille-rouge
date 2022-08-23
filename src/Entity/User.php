@@ -23,6 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['livreu:red:simple','gestionnaire:red:simple','client:red:simple'])]
     protected $id;
 
     
@@ -30,6 +31,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     protected $login;
 
+    // #[Groups(['livreu:red:simple','gestionnaire:red:simple','client:red:simple'])]
     #[ORM\Column(type: 'json')]
     protected $roles = [];
 

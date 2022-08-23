@@ -2,28 +2,34 @@
 
 namespace App\Entity;
 
+use App\Entity\Client;
+use App\Entity\Livraison;
+use App\Entity\LigneCommande;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CommandeRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 #[ApiResource(
     collectionOperations:[
-        "get"=>[
-            'method' => 'get',
+     "get"=>[
             'normalization_context' => ['groups' => ['commande:red:simple']],
             ]
     
     ,"post"=>[
-    'denormalization_context' => ['groups' => ['commande:red:simple']],
+    'denormalization_context' => ['groups' => ['commande:write:simple']],
 
     ]
 ],
-itemOperations:["put","get"]
+itemOperations:[
+    "put",
+    "get"=>['normalization_context' => ['groups' => ['commande:red:items']]]
+]
 )]
 
 class Commande
@@ -32,41 +38,54 @@ class Commande
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['commande:red:simple','commande:write:simple','commande:red:items'])]
     private $id;
 
     #[ORM\Column(type: 'integer',nullable:true)]
-    // #[Groups(['commande:red:simple'])]
+    #[Groups(['commande:red:simple','commande:write:simple','commande:red:items','livraison:red:simple','zone:red:simple','client:red:items'])]
     private $numeroCommande;
 
-    #[ORM\Column(type: 'string', length: 255,nullable:true)]
-    // #[Groups(['commande:red:simple'])]
-    private $dateCommande;
-
-
-
-    // #[ORM\ManyToMany(targetEntity: LigneCommande::class, inversedBy: 'commandes')]
-
-    // private $commandes;
-
-    // #[ORM\ManyToMany(targetEntity: Produit::class, mappedBy: 'commandes')]
-    // private $produits;
-    // pour changer le ligneCommande en Produits on utilise  #[SerializedName('Produits')]
-    // #[ORM\OneToMany(mappedBy: 'commande', targetEntity: LigneCommande::class,cascade:['persist'])]
-    // private $ligneDecommande;
-
+    // #[ORM\Column(type: 'date', length: 255,nullable:true)]
+    // #[Groups(['commande:red:simple','commande:write:simple','commande:red:items','livraison:red:simple','zone:red:simple'])]
+    // private $dateCommande;
+    
+    
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'commandes')]
+     #[Groups(['commande:red:simple','commande:write:simple','commande:red:items','livraison:red:simple','zone:red:simple'])]
     private $client;
 
     #[ORM\ManyToOne(targetEntity: Livraison::class, inversedBy: 'commandes')]
+    #[Groups(['commande:red:simple','commande:write:simple','commande:red:items'])]
     private $livraison;
 
-    #[SerializedName('Produits')]
-    #[ORM\ManyToMany(targetEntity: LigneCommande::class, inversedBy: 'commandes',cascade:['persist'])]
-    #[Groups(['commande:red:simple'])]
-    private $ligneDecommandes;
+    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: LigneCommande::class,cascade: ['persist'])]
+     #[Groups(['commande:red:simple','commande:write:simple','commande:red:items','livraison:red:simple'])]
+     #[SerializedName('Produits')]
+    private $ligneDeCommandes;
 
-    // #[ORM\ManyToMany(targetEntity: LigneCommande::class, inversedBy: 'commandes')]
-    // private $ligneDeCommandes;
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    #[Groups(['commande:write:simple'])]
+    private ?Gestionnaire $gestionnaire = null;
+
+    #[ORM\Column]
+    #[Groups(['commande:red:simple','commande:red:items','zone:red:simple','client:red:items'])]
+    private ?int $prixTotal = null;
+
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    private ?Zone $zone = null;
+    
+    #[ORM\Column]
+    #[Groups(['commande:red:simple'])]
+    private ?\DateTimeImmutable $createAt = null;
+
+   
+
+    // #[SerializedName('Produits')]
+    // #[ORM\ManyToMany(targetEntity: LigneCommande::class, inversedBy: 'commandes',cascade:['persist'])]
+    // #[Groups(['commande:red:simple'])]
+    // private $ligneDecommandes;
+
+
 
 
 
@@ -74,9 +93,8 @@ class Commande
     {
 
         // $this->produits = new ArrayCollection();
-        // $this->ligneDeCommandes = new ArrayCollection();
-        // $this->ligneDecommande = new ArrayCollection();
-        $this->ligneDecommandes = new ArrayCollection();
+        // $this->ligneDecommandes = new ArrayCollection();
+        $this->ligneDeCommandes = new ArrayCollection();
        
     }
 
@@ -85,7 +103,7 @@ class Commande
         return $this->id;
     }
 
-    public function getNumeroCommande(): ?int
+    public function getNumeroCommande()
     {
         return $this->numeroCommande;
     }
@@ -97,47 +115,19 @@ class Commande
         return $this;
     }
 
-    public function getDateCommande(): ?string
-    {
-        return $this->dateCommande;
-    }
-
-    public function setDateCommande(string $dateCommande): self
-    {
-        $this->dateCommande = $dateCommande;
-
-        return $this;
-    }
-
-    // /**
-    //  * @return Collection<int, LigneCommande>
-    //  */
-    // public function getLigneDecommande(): Collection
+    // public function getDateCommande()
     // {
-    //     return $this->ligneDecommande;
+    //     return $this->dateCommande;
     // }
 
-    // public function addLigneDecommande(LigneCommande $ligneDecommande): self
+    // public function setDateCommande($dateCommande): self
     // {
-    //     if (!$this->ligneDecommande->contains($ligneDecommande)) {
-    //         $this->ligneDecommande[] = $ligneDecommande;
-    //         $ligneDecommande->setCommande($this);
-    //     }
+    //     $this->dateCommande = $dateCommande;
 
     //     return $this;
     // }
 
-    // public function removeLigneDecommande(LigneCommande $ligneDecommande): self
-    // {
-    //     if ($this->ligneDecommande->removeElement($ligneDecommande)) {
-    //         // set the owning side to null (unless already changed)
-    //         if ($ligneDecommande->getCommande() === $this) {
-    //             $ligneDecommande->setCommande(null);
-    //         }
-    //     }
-
-    //     return $this;
-    // }
+    
 
     public function getClient(): ?Client
     {
@@ -163,27 +153,106 @@ class Commande
         return $this;
     }
 
+    // /**
+    //  * @return Collection<int, LigneCommande>
+    //  */
+    // public function getLigneDecommandes(): Collection
+    // {
+    //     return $this->ligneDecommandes;
+    // }
+
+    // public function addLigneDecommande(LigneCommande $ligneDecommande): self
+    // {
+    //     if (!$this->ligneDecommandes->contains($ligneDecommande)) {
+    //         $this->ligneDecommandes[] = $ligneDecommande;
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeLigneDecommande(LigneCommande $ligneDecommande): self
+    // {
+    //     $this->ligneDecommandes->removeElement($ligneDecommande);
+
+    //     return $this;
+    // }
+
     /**
      * @return Collection<int, LigneCommande>
      */
-    public function getLigneDecommandes(): Collection
+    public function getLigneDeCommandes(): Collection
     {
-        return $this->ligneDecommandes;
+        return $this->ligneDeCommandes;
     }
 
-    public function addLigneDecommande(LigneCommande $ligneDecommande): self
+    public function addLigneDeCommande(LigneCommande $ligneDeCommande): self
     {
-        if (!$this->ligneDecommandes->contains($ligneDecommande)) {
-            $this->ligneDecommandes[] = $ligneDecommande;
+        if (!$this->ligneDeCommandes->contains($ligneDeCommande)) {
+            $this->ligneDeCommandes[] = $ligneDeCommande;
+            $ligneDeCommande->setCommande($this);
         }
 
         return $this;
     }
 
-    public function removeLigneDecommande(LigneCommande $ligneDecommande): self
+    public function removeLigneDeCommande(LigneCommande $ligneDeCommande): self
     {
-        $this->ligneDecommandes->removeElement($ligneDecommande);
+        if ($this->ligneDeCommandes->removeElement($ligneDeCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($ligneDeCommande->getCommande() === $this) {
+                $ligneDeCommande->setCommande(null);
+            }
+        }
 
         return $this;
     }
+
+    public function getGestionnaire(): ?Gestionnaire
+    {
+        return $this->gestionnaire;
+    }
+
+    public function setGestionnaire(?Gestionnaire $gestionnaire): self
+    {
+        $this->gestionnaire = $gestionnaire;
+
+        return $this;
+    }
+
+    public function getPrixTotal(): ?int
+    {
+        return $this->prixTotal;
+    }
+
+    public function setPrixTotal(int $prixTotal): self
+    {
+        $this->prixTotal = $prixTotal;
+
+        return $this;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createAt;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $createAt): self
+    {
+        $this->createAt = $createAt;
+
+        return $this;
+    }
+
 }

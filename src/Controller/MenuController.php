@@ -14,22 +14,22 @@ class MenuController extends AbstractController
 {
     #[Route('/api/menus2', name: 'app_menu')]
 
-    public function invoke(Request $request,EntityManagerInterface $entityManager,BurgerRepository $burgerRepository)
+    public function __invoke(Request $request,EntityManagerInterface $entityManager,BurgerRepository $burgerRepository)
 
     {
         $context=$request->getContent();
         $tab=json_decode($context);
 
         // dd($tab->burgers[0]->burger(0));
-        if (!isset($tab->NomProduit)) {
+        if (!isset($tab->nomProduit)) {
             
 
             return $this->json('nom du produit obligatoire',400);
         }
             $menus=new Menu();
-            $menus->setNomProduit($tab->NomProduit);
-            $menus->setPrix($tab->Prix);
-            foreach ($tab-> burgers as $burg) {
+            $menus->setNomProduit($tab->nomProduit);
+            $menus->setPrix($tab->prix);
+            foreach ($tab-> menuBurgers as $burg) {
                 $burger=$burgerRepository->find($burg->burger);
                 // dd($burger);
                 if ($burger) {

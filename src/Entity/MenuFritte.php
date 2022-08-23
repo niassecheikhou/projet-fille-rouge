@@ -15,14 +15,14 @@ class MenuFritte
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['groups' => 'menu:red:simple','catalogues:red:simple','menu:red:complet'])]
     private $quantite;
 
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuFrittes')]
     private $menu;
 
     #[ORM\ManyToOne(targetEntity: Fritte::class, inversedBy: 'menuFrittes')]
-    #[Groups(['groups' => 'menu:red:simple'])]
+    #[Groups(['groups' => 'menu:red:simple','catalogues:red:simple','menu:red:complet'])]
     private $fritte;
 
     public function getId(): ?int

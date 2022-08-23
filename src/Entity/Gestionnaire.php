@@ -24,17 +24,19 @@ itemOperations:["put","get"]
 class Gestionnaire extends User
 {
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Produit::class)]
-    
-
     private $produits;
 
     #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Livreur::class)]
     private $livreurs;
 
+    #[ORM\OneToMany(mappedBy: 'gestionnaire', targetEntity: Commande::class)]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
         $this->livreurs = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     /**
@@ -91,6 +93,36 @@ class Gestionnaire extends User
             // set the owning side to null (unless already changed)
             if ($livreur->getGestionnaire() === $this) {
                 $livreur->setGestionnaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): self
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes[] = $commande;
+            $commande->setGestionnaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): self
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getGestionnaire() === $this) {
+                $commande->setGestionnaire(null);
             }
         }
 

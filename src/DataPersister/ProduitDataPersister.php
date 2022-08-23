@@ -41,6 +41,8 @@ class ProduitDataPersister implements DataPersisterInterface
     public function persist($data)
     {
       
+        //pour inserer image du berger
+        // $data->setImage(file_get_contents($data->getPhoto()));
         $data->setGestionnaire($this->getUser());
         $this->entityManager->persist($data);
         $this->entityManager->flush();

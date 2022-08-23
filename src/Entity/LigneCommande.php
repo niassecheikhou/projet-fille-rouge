@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Produit;
+use App\Entity\Commande;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\LigneCommandeRepository;
 use Doctrine\Common\Collections\Collection;
@@ -17,7 +19,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => ['groups' => ['lignedecommande:red:simple']],
             ]
     
-    ,"post"],
+         ,"post"=>[
+                'denormalization_context' => ['groups' => ['lignedecommande:write:simple']],
+                 ],
+],
 itemOperations:["put","get"]
 )]
 class LigneCommande
@@ -25,23 +30,30 @@ class LigneCommande
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['commande:write:simple','commande:red:simple','lignedecommande:red:simple'])]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    #[Groups(['commande:red:simple','lignedecommande:red:simple'])]
+    #[ORM\Column(type: 'integer',nullable:true)]
+    #[Groups(['commande:red:simple','commande:write:simple','livraison:red:simple','lignedecommande:write:simple','lignedecommande:red:simple'])]
     private $qantiteCommander;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['commande:red:simple','ligne de commande:red:simple'])]
+    #[Groups(['commande:red:simple','livraison:red:simple','lignedecommande:write:simple','lignedecommande:red:simple'])]
     private $montantPayer;
 
-    #[Groups(['lignedecommande:red:simple'])]
-    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'ligneDecommandes')]
-    private $commandes;
+    #[ORM\ManyToOne( targetEntity: Commande::class, inversedBy: 'ligneDeCommandes')]
+    // #[Groups(['commande:write:simple','commande:red:simple'])]
+    private $commande;
+
+
+    #[ORM\ManyToOne(targetEntity: Produit::class, inversedBy: 'ligneDecommandes')]
+    #[Groups(['commande:write:simple','commande:red:simple','commande:red:items','lignedecommande:write:simple','lignedecommande:red:simple'])]
+    private $produit;
+
 
     public function __construct()
     {
-        $this->commandes = new ArrayCollection();
+
     }
 
    
@@ -76,10 +88,6 @@ class LigneCommande
     }
 
 
-  
-
-    #[Groups(['commande:red:simple'])]
-
     public function getProduit(): ?Produit
     {
         return $this->produit;
@@ -92,50 +100,20 @@ class LigneCommande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
-    public function getCommandes(): Collection
+    public function getCommande(): ?Commande
     {
-        return $this->commandes;
+        return $this->commande;
     }
 
-    public function addCommande(Commande $commande): self
+    public function setCommande(?Commande $commande): self
     {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes[] = $commande;
-            $commande->addLigneDecommande($this);
-        }
+        $this->commande = $commande;
 
         return $this;
     }
 
-    public function removeCommande(Commande $commande): self
-    {
-        if ($this->commandes->removeElement($commande)) {
-            $commande->removeLigneDecommande($this);
-        }
+   
 
-        return $this;
-    }
 }
-  // /**
-    //  * @return Collection<int, Commande>
-    //  */
-    // public function getCommande(): Collection
-    // {
-    //     return $this->commande;
-    // }
 
 
-    // public function getCommande(): ?Commande
-    // {
-    //     return $this->commandes;
-    // }
-
-    // public function setCommande(?Commande $commande): self
-    // {
-    //     $this->commande = $commande;
-
-    //     return $this;
-    // }

@@ -10,7 +10,11 @@ use ApiPlatform\Core\Annotation\ApiResource;
         "complement"=>[
             "method"=>"GET",
             "path"=>"/complements",
+            'normalization_context' => ['groups' => ['complement:red:simple']],
+
         ]
+
+        
         ],
         itemOperations:[]
 )]
